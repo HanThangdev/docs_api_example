@@ -1,1215 +1,2333 @@
-openapi: 3.0.0
-servers:
-  - url: https://petstore.swagger.io/v2
-    description: Default server
-  - url: https://petstore.swagger.io/sandbox
-    description: Sandbox server
+---
+openapi: 3.1.0
 info:
-  description: |
-    This is a sample server Petstore server.
-    You can find out more about Swagger at
-    [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).
-    For this sample, you can use the api key `special-key` to test the authorization filters.
-
-    ## Introduction
-    This API is documented in **OpenAPI format** and is based on
-    [Petstore sample](http://petstore.swagger.io/) provided by [swagger.io](http://swagger.io) team.
-    It was **extended** to illustrate features of [generator-openapi-repo](https://github.com/Rebilly/generator-openapi-repo)
-    tool and [ReDoc](https://github.com/Redocly/redoc) documentation. In addition to standard
-    OpenAPI syntax we use a few [vendor extensions](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md).
-
-    ## OpenAPI Specification
-    This API is documented in **OpenAPI format** and is based on
-    [Petstore sample](http://petstore.swagger.io/) provided by [swagger.io](http://swagger.io) team.
-    It was **extended** to illustrate features of [generator-openapi-repo](https://github.com/Rebilly/generator-openapi-repo)
-    tool and [ReDoc](https://github.com/Redocly/redoc) documentation. In addition to standard
-    OpenAPI syntax we use a few [vendor extensions](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md).
-
-    ## Cross-Origin Resource Sharing
-    This API features Cross-Origin Resource Sharing (CORS) implemented in compliance with  [W3C spec](https://www.w3.org/TR/cors/).
-    And that allows cross-domain communication from the browser.
-    All responses have a wildcard same-origin which makes them completely public and accessible to everyone, including any code on any site.
-
-    ## Authentication
-
-    Petstore offers two forms of authentication:
-      - API Key
-      - OAuth2
-    OAuth2 - an open protocol to allow secure authorization in a simple
-    and standard method from web, mobile and desktop applications.
-
-  version: 2.0.0
-  title: Swagger Petstore YAML
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    name: API Support
-    email: apiteam@swagger.io
-    url: https://github.com/Redocly/redoc
-  x-logo:
-    url: "https://redocly.github.io/redoc/petstore-logo.png"
-    altText: Petstore logo
-  license:
-    name: Apache 2.0
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-externalDocs:
-  description: Find out how to create Github repo for your OpenAPI spec.
-  url: "https://github.com/Rebilly/generator-openapi-repo"
-tags:
-  - name: pet
-    description: Everything about your Pets
-    x-displayName: Pets
-  - name: store
-    description: Access to Petstore orders
-    x-displayName: Petstore Orders
-  - name: user
-    description: Operations about user
-    x-displayName: Users
-  - name: pet_model
-    x-displayName: The Pet Model
-    description: |
-      <SchemaDefinition schemaRef="#/components/schemas/Pet" />
-  - name: store_model
-    x-displayName: The Order Model
-    description: |
-      <SchemaDefinition schemaRef="#/components/schemas/Order" exampleRef="#/components/examples/Order" showReadOnly={true} showWriteOnly={true} />
-x-tagGroups:
-  - name: General
-    tags:
-      - pet
-      - store
-  - name: User Management
-    tags:
-      - user
-  - name: Models
-    tags:
-      - pet_model
-      - store_model
+  title: ChatFly Backend application
+  version: 0.0.0
 paths:
-  /pet:
-    parameters:
-      - name: Accept-Language
-        in: header
-        description: "The language you prefer for messages. Supported values are en-AU, en-CA, en-GB, en-US"
-        example: en-US
-        required: false
-        schema:
-          type: string
-          default: en-AU
-      - name: cookieParam
-        in: cookie
-        description: Some cookie
-        required: true
-        schema:
-          type: integer
-          format: int64
+  "/api/user":
     post:
       tags:
-        - pet
-      summary: Add a new pet to the store
-      description: Add new pet to the store inventory.
-      operationId: addPet
-      responses:
-        "405":
-          description: Invalid input
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-      x-codeSamples:
-        - lang: "C#"
-          source: |
-            PetStore.v1.Pet pet = new PetStore.v1.Pet();
-            pet.setApiKey("your api key");
-            pet.petType = PetStore.v1.Pet.TYPE_DOG;
-            pet.name = "Rex";
-            // set other fields
-            PetStoreResponse response = pet.create();
-            if (response.statusCode == HttpStatusCode.Created)
-            {
-              // Successfully created
-            }
-            else
-            {
-              // Something wrong -- check response for errors
-              Console.WriteLine(response.getRawResponse());
-            }
-        - lang: PHP
-          source: |
-            $form = new \PetStore\Entities\Pet();
-            $form->setPetType("Dog");
-            $form->setName("Rex");
-            // set other fields
-            try {
-                $pet = $client->pets()->create($form);
-            } catch (UnprocessableEntityException $e) {
-                var_dump($e->getErrors());
-            }
+      - User
+      summary: Create User
+      description: Add user data to database.
+      operationId: create_user_api_user_post
       requestBody:
-        $ref: "#/components/requestBodies/Pet"
-    put:
-      tags:
-        - pet
-      summary: Update an existing pet
-      description: ""
-      operationId: updatePet
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UserCreateSchema"
       responses:
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Pet not found
-        "405":
-          description: Validation exception
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-      x-codeSamples:
-        - lang: PHP
-          source: |
-            $form = new \PetStore\Entities\Pet();
-            $form->setPetId(1);
-            $form->setPetType("Dog");
-            $form->setName("Rex");
-            // set other fields
-            try {
-                $pet = $client->pets()->update($form);
-            } catch (UnprocessableEntityException $e) {
-                var_dump($e->getErrors());
-            }
-      requestBody:
-        $ref: "#/components/requestBodies/Pet"
-  "/pet/{petId}":
-    get:
-      tags:
-        - pet
-      summary: Find pet by ID
-      description: Returns a single pet
-      operationId: getPetById
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to return
-          required: true
-          deprecated: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: successful operation
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pet"
-            application/xml:
+                "$ref": "#/components/schemas/UserSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
               schema:
-                $ref: "#/components/schemas/Pet"
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Pet not found
-      security:
-        - api_key: []
+                "$ref": "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+      - User
+      summary: Get Users
+      description: Get all user's information.
+      operationId: get_users_api_user_get
+      parameters:
+      - name: skip
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Skip
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - User
+      summary: Delete User
+      description: Delete user.
+      operationId: delete_user_api_user_delete
+      parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: User Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/resend-verify-email":
     post:
       tags:
-        - pet
-      summary: Updates a pet in the store with form data
-      description: ""
-      operationId: updatePetWithForm
+      - User
+      summary: Resend Verify Email
+      description: Add user data to database.
+      operationId: resend_verify_email_api_user_resend_verify_email_post
       parameters:
-        - name: petId
-          in: path
-          description: ID of pet that needs to be updated
-          required: true
-          schema:
-            type: integer
-            format: int64
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Email
       responses:
-        "405":
-          description: Invalid input
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/verify-email":
+    get:
+      tags:
+      - User
+      summary: Handle Verify
+      operationId: handle_verify_api_user_verify_email_get
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/{user_id}":
+    get:
+      tags:
+      - User
+      summary: Get User
+      description: Get user information by an id.
+      operationId: get_user_api_user__user_id__get
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: User Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/forgot-password":
+    put:
+      tags:
+      - User
+      summary: Forgot Password
+      description: Forgot password.
+      operationId: forgot_password_api_user_forgot_password_put
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Email
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/forgot-password/verify":
+    put:
+      tags:
+      - User
+      summary: Verify Forgot Password
+      description: Verify token forgot password.
+      operationId: verify_forgot_password_api_user_forgot_password_verify_put
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/user/forgot-password/change-password":
+    put:
+      tags:
+      - User
+      summary: Change Password
+      description: Change password.
+      operationId: change_password_api_user_forgot_password_change_password_put
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Token
+      - name: password
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Password
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UserSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot":
+    post:
+      tags:
+      - Bot
+      summary: Create Bot
+      description: Create a bot.
+      operationId: create_bot_api_bot_post
       security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotCreateSchema"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+      - Bot
+      summary: Update Bot
+      description: Update bot.
+      operationId: update_bot_api_bot_put
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotUpdateSchema"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Bot
+      summary: Delete Bot
+      description: Delete bot.
+      operationId: delete_bot_api_bot_delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+      - Bot
+      summary: Manage Bot
+      description: Manage bot.
+      operationId: manage_bot_api_bot_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/api/bot/share":
+    get:
+      tags:
+      - Bot
+      summary: Share Bot
+      description: Manage share bot.
+      operationId: share_bot_api_bot_share_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot/share/verify":
+    post:
+      tags:
+      - Bot
+      summary: Verify Share Bot
+      description: Verify share bot.
+      operationId: verify_share_bot_api_bot_share_verify_post
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot/information":
+    get:
+      tags:
+      - Bot
+      summary: Manage Bot
+      description: Information bot.
+      operationId: manage_bot_api_bot_information_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot/bot-template-config":
+    post:
+      tags:
+      - Bot
+      summary: Create Bot Template Config
+      operationId: create_bot_template_config_api_bot_bot_template_config_post
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotTemplateConfigSchema-Input"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotTemplateConfigSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+      - Bot
+      summary: Get Bot Template Config
+      description: Get bot template config.
+      operationId: get_bot_template_config_api_bot_bot_template_config_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: skip
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          title: Skip
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotTemplateConfigResponseSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+      - Bot
+      summary: Update Bot Template Config
+      description: Update bot template config.
+      operationId: update_bot_template_config_api_bot_bot_template_config_put
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_template_config_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Template Config Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotTemplateConfigSchema-Input"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotTemplateConfigSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Bot
+      summary: Delete Bot Template Config
+      description: Delete bot template config.
+      operationId: delete_bot_template_config_api_bot_bot_template_config_delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_template_config_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Template Config Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotTemplateConfigSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot/bot-widget-setting":
+    get:
+      tags:
+      - Bot
+      summary: Get Bot Widget Setting
+      description: Get bot widget settings by bot id
+      operationId: get_bot_widget_setting_api_bot_bot_widget_setting_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotWidgetSettingSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+      - Bot
+      summary: Create Bot Widget Setting
+      description: Create a new bot widget setting.
+      operationId: create_bot_widget_setting_api_bot_bot_widget_setting_post
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotWidgetSettingSchema-Input"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotWidgetSettingSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    put:
+      tags:
+      - Bot
+      summary: Update Bot Widget Setting
+      description: Update bot widget setting.
+      operationId: update_bot_widget_setting_api_bot_bot_widget_setting_put
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotWidgetSettingSchema-Input"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotWidgetSettingSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Bot
+      summary: Delete Bot Widget Setting
+      description: Delete bot widget setting.
+      operationId: delete_bot_widget_setting_api_bot_bot_widget_setting_delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotWidgetSettingSchema-Output"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/bot/upload-bot-profile-picture":
+    post:
+      tags:
+      - Bot
+      summary: Upload Bot Profile Picture
+      description: Upload bot profile picture to S3
+      operationId: upload_bot_profile_picture_api_bot_upload_bot_profile_picture_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/Body_upload_bot_profile_picture_api_bot_upload_bot_profile_picture_post"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/scraping/url":
+    post:
+      tags:
+      - Scraping
+      summary: Scrape Url
+      description: Create a Knowledge Base and return a streaming response.
+      operationId: scrape_url_api_scraping_url_post
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/KnowledgeBaseCreateSchema"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Scraping
+      summary: Delete Url Knowledge Base
+      operationId: delete_url_knowledge_base_api_scraping_url_delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      - name: base64_url
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Base64 Url
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/scraping/url/{bot_id}":
+    get:
+      tags:
+      - Scraping
+      summary: Get All Url
+      description: Get all urls for a given bot by bot_id
+      operationId: get_all_url_api_scraping_url__bot_id__get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/BotKnowledgeBaseUrlResponseSchema"
+                title: Response Get All Url Api Scraping Url  Bot Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/scraping/file/{bot_id}":
+    get:
+      tags:
+      - Scraping
+      summary: Get All File
+      description: Get all urls for a given bot by bot_id
+      operationId: get_all_file_api_scraping_file__bot_id__get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/BotKnowledgeBaseFileResponseSchema"
+                title: Response Get All File Api Scraping File  Bot Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/scraping/file":
+    post:
+      tags:
+      - Scraping
+      summary: Upload File
+      operationId: upload_file_api_scraping_file_post
+      security:
+      - OAuth2PasswordBearerCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              "$ref": "#/components/schemas/Body_upload_file_api_scraping_file_post"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Scraping
+      summary: Delete File Knowledge Base
+      operationId: delete_file_knowledge_base_api_scraping_file_delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      - name: knowledge_base_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Knowledge Base Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/scraping/{bot_id}":
+    get:
+      tags:
+      - Scraping
+      summary: Get Status Of All Knowledge Bases
+      description: |-
+        Get all knowledge bases.
+
+        @param bot_id: Bot to get all knowledge bases
+        @param db: Databases to use for retrieval.
+
+        @return list of dicts
+      operationId: get_status_of_all_knowledge_bases_api_scraping__bot_id__get
+      parameters:
+      - name: bot_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotKnowledgeBaseResponseSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/scraping/import-question-answer":
+    get:
+      tags:
+      - Scraping
+      summary: Manage Bot
+      description: Import question and answer of bot.
+      operationId: manage_bot_api_scraping_import_question_answer_get
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BotQADocumentSchema"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BotQADocumentResponseSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/chat/session":
+    post:
+      tags:
+      - Chat
+      summary: Generate Session
+      description: Generate new session uuid
+      operationId: generate_session_api_chat_session_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+                title: Response Generate Session Api Chat Session Post
+  "/api/chat/get-streaming-response":
+    post:
+      tags:
+      - Chat
+      summary: Get Streaming Response
+      description: Create a Knowledge Base and return a streaming response.
+      operationId: get_streaming_response_api_chat_get_streaming_response_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ChatHistoryCreateSchema"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/chat/history":
+    get:
+      tags:
+      - Chat
+      summary: Get Conversations History
+      description: Get Conversation history.
+      operationId: get_conversations_history_api_chat_history_get
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: bot_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Bot Id
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          default: '2023-01-01T00:00:00'
+          title: Date From
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          default: '2030-12-31T00:00:00'
+          title: Date To
+      - name: order
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: created_at.desc
+          title: Order
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/chat/session/{session_id}":
+    delete:
+      tags:
+      - Chat
+      summary: Delete Session
+      operationId: delete_session_api_chat_session__session_id__delete
+      security:
+      - OAuth2PasswordBearerCookie: []
+      parameters:
+      - name: session_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Session Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/chat/get-normal-response":
+    post:
+      tags:
+      - Chat
+      summary: Get Normal Response
+      description: Get a normal response.
+      operationId: get_normal_response_api_chat_get_normal_response_post
+      parameters:
+      - name: message
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Message
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/chat/messager-webhook":
+    get:
+      tags:
+      - Chat
+      summary: Verify Message Webhook
+      operationId: verify_message_webhook_api_chat_messager_webhook_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    post:
+      tags:
+      - Chat
+      summary: Send Message Webhook
+      operationId: send_message_webhook_api_chat_messager_webhook_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/api/chat/history.pdf":
+    post:
+      tags:
+      - Chat
+      summary: Convert History Export Pdf
+      description: Export Conversation History to PDF
+      operationId: convert_history_export_pdf_api_chat_history_pdf_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/ConversationHistoryInputSchema"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/billing/upgrade":
+    post:
+      tags:
+      - Billing
+      summary: Billing Upgrade
+      operationId: billing_upgrade_api_billing_upgrade_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/BillingUpgradeSchema"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/BillingCreateSchema"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/billing/get-current-pricing-plan":
+    get:
+      tags:
+      - Billing
+      summary: Get Current Pricing Plans
+      operationId: get_current_pricing_plans_api_billing_get_current_pricing_plan_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/billing/upgrade/vnpay-return":
+    get:
+      tags:
+      - Billing
+      summary: Vnpay Billing Upgrade With Return
+      operationId: vnpay_billing_upgrade_with_return_api_billing_upgrade_vnpay_return_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/api/billing/upgrade/vnpay-sandbox":
+    get:
+      tags:
+      - Billing
+      summary: Vnpay Billing Redirect
+      operationId: vnpay_billing_redirect_api_billing_upgrade_vnpay_sandbox_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/token":
+    post:
+      tags:
+      - Authentication
+      summary: Login For Access Token
+      description: Login token.
+      operationId: login_for_access_token_token_post
       requestBody:
         content:
           application/x-www-form-urlencoded:
             schema:
-              type: object
-              properties:
-                name:
-                  description: Updated name of the pet
-                  type: string
-                status:
-                  description: Updated status of the pet
-                  type: string
-    delete:
-      tags:
-        - pet
-      summary: Deletes a pet
-      description: ""
-      operationId: deletePet
-      parameters:
-        - name: api_key
-          in: header
-          required: false
-          schema:
-            type: string
-          example: "Bearer <TOKEN>"
-        - name: petId
-          in: path
-          description: Pet id to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "400":
-          description: Invalid pet value
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-  "/pet/{petId}/uploadImage":
-    post:
-      tags:
-        - pet
-      summary: uploads an image
-      description: ""
-      operationId: uploadFile
-      parameters:
-        - name: petId
-          in: path
-          description: ID of pet to update
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiResponse"
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-      requestBody:
-        content:
-          application/octet-stream:
-            schema:
-              type: string
-              format: binary
-  /pet/findByStatus:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by status
-      description: Multiple status values can be provided with comma separated strings
-      operationId: findPetsByStatus
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: true
-          style: form
-          schema:
-            type: array
-            minItems: 1
-            maxItems: 3
-            items:
-              type: string
-              enum:
-                - available
-                - pending
-                - sold
-              default: available
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Pet"
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Pet"
-        "400":
-          description: Invalid status value
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-        - pet
-      summary: Finds Pets by tags
-      description: >-
-        Multiple tags can be provided with comma separated strings. Use tag1,
-        tag2, tag3 for testing.
-      operationId: findPetsByTags
-      deprecated: true
-      parameters:
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: true
-          style: form
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Pet"
-            application/xml:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Pet"
-        "400":
-          description: Invalid tag value
-      security:
-        - petstore_auth:
-            - "write:pets"
-            - "read:pets"
-  /store/inventory:
-    get:
-      tags:
-        - store
-      summary: Returns pet inventories by status
-      description: Returns a map of status codes to quantities
-      operationId: getInventory
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: integer
-                  format: int32
-      security:
-        - api_key: []
-  /store/order:
-    post:
-      tags:
-        - store
-      summary: Place an order for a pet
-      description: ""
-      operationId: placeOrder
-      responses:
-        "200":
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Order"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Order"
-        "400":
-          description: Invalid Order
-          content:
-            application/json:
-              example:
-                status: 400
-                message: "Invalid Order"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Order"
-        description: order placed for purchasing the pet
+              "$ref": "#/components/schemas/Body_login_for_access_token_token_post"
         required: true
-  "/store/order/{orderId}":
-    get:
-      tags:
-        - store
-      summary: Find purchase order by ID
-      description: >-
-        For valid response try integer IDs with value <= 5 or > 10. Other values
-        will generated exceptions
-      operationId: getOrderById
-      parameters:
-        - name: orderId
-          in: path
-          description: ID of pet that needs to be fetched
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 5
       responses:
-        "200":
-          description: successful operation
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Order"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Order"
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Order not found
-    delete:
-      tags:
-        - store
-      summary: Delete purchase order by ID
-      description: >-
-        For valid response try integer IDs with value < 1000. Anything above
-        1000 or nonintegers will generate API errors
-      operationId: deleteOrder
-      parameters:
-        - name: orderId
-          in: path
-          description: ID of the order that needs to be deleted
-          required: true
-          schema:
-            type: string
-            minimum: 1
-      responses:
-        "400":
-          description: Invalid ID supplied
-        "404":
-          description: Order not found
-  /store/subscribe:
-    post:
-      tags:
-        - store
-      summary: Subscribe to the Store events
-      description: Add subscription for a store events
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                callbackUrl:
-                  type: string
-                  format: uri
-                  description: This URL will be called by the server when the desired event will occur
-                  example: https://myserver.com/send/callback/here
-                eventName:
-                  type: string
-                  description: Event name for the subscription
-                  enum:
-                    - orderInProgress
-                    - orderShipped
-                    - orderDelivered
-                  example: orderInProgress
-              required:
-                - callbackUrl
-                - eventName
-      responses:
-        "201":
-          description: Subscription added
+                "$ref": "#/components/schemas/TokenSchema"
+        '422':
+          description: Validation Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  subscriptionId:
-                    type: string
-                    example: AAA-123-BBB-456
-      callbacks:
-        orderInProgress:
-          "{$request.body#/callbackUrl}?event={$request.body#/eventName}":
-            servers:
-              - url: //callback-url.path-level/v1
-                description: Path level server 1
-              - url: //callback-url.path-level/v2
-                description: Path level server 2
-            post:
-              summary: Order in Progress (Summary)
-              description: A callback triggered every time an Order is updated status to "inProgress" (Description)
-              externalDocs:
-                description: Find out more
-                url: "https://more-details.com/demo"
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2018-10-19T16:46:45Z"
-                        status:
-                          type: string
-                          example: "inProgress"
-                  application/xml:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                    example: |
-                      <?xml version="1.0" encoding="UTF-8"?>
-                      <root>
-                        <orderId>123</orderId>
-                        <status>inProgress</status>
-                        <timestamp>2018-10-19T16:46:45Z</timestamp>
-                      </root>
-              responses:
-                "200":
-                  description: Callback successfully processed and no retries will be performed
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          someProp:
-                            type: string
-                            example: "123"
-                "299":
-                  description: Response for cancelling subscription
-                "500":
-                  description: Callback processing failed and retries will be performed
-              x-codeSamples:
-                - lang: "C#"
-                  source: |
-                    PetStore.v1.Pet pet = new PetStore.v1.Pet();
-                    pet.setApiKey("your api key");
-                    pet.petType = PetStore.v1.Pet.TYPE_DOG;
-                    pet.name = "Rex";
-                    // set other fields
-                    PetStoreResponse response = pet.create();
-                    if (response.statusCode == HttpStatusCode.Created)
-                    {
-                      // Successfully created
-                    }
-                    else
-                    {
-                      // Something wrong -- check response for errors
-                      Console.WriteLine(response.getRawResponse());
-                    }
-                - lang: PHP
-                  source: |
-                    $form = new \PetStore\Entities\Pet();
-                    $form->setPetType("Dog");
-                    $form->setName("Rex");
-                    // set other fields
-                    try {
-                        $pet = $client->pets()->create($form);
-                    } catch (UnprocessableEntityException $e) {
-                        var_dump($e->getErrors());
-                    }
-            put:
-              description: Order in Progress (Only Description)
-              servers:
-                - url: //callback-url.operation-level/v1
-                  description: Operation level server 1 (Operation override)
-                - url: //callback-url.operation-level/v2
-                  description: Operation level server 2 (Operation override)
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2018-10-19T16:46:45Z"
-                        status:
-                          type: string
-                          example: "inProgress"
-                  application/xml:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                    example: |
-                      <?xml version="1.0" encoding="UTF-8"?>
-                      <root>
-                        <orderId>123</orderId>
-                        <status>inProgress</status>
-                        <timestamp>2018-10-19T16:46:45Z</timestamp>
-                      </root>
-              responses:
-                "200":
-                  description: Callback successfully processed and no retries will be performed
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          someProp:
-                            type: string
-                            example: "123"
-        orderShipped:
-          "{$request.body#/callbackUrl}?event={$request.body#/eventName}":
-            post:
-              description: |
-                Very long description
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                culpa qui officia deserunt mollit anim id est laborum.
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2018-10-19T16:46:45Z"
-                        estimatedDeliveryDate:
-                          type: string
-                          format: date-time
-                          example: "2018-11-11T16:00:00Z"
-              responses:
-                "200":
-                  description: Callback successfully processed and no retries will be performed
-        orderDelivered:
-          "http://notificationServer.com?url={$request.body#/callbackUrl}&event={$request.body#/eventName}":
-            post:
-              deprecated: true
-              summary: Order delivered
-              description: A callback triggered every time an Order is delivered to the recipient
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      type: object
-                      properties:
-                        orderId:
-                          type: string
-                          example: "123"
-                        timestamp:
-                          type: string
-                          format: date-time
-                          example: "2018-10-19T16:46:45Z"
-              responses:
-                "200":
-                  description: Callback successfully processed and no retries will be performed
-  /user:
-    post:
-      tags:
-        - user
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User"
-        description: Created user object
-        required: true
-  "/user/{username}":
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/logout":
     get:
       tags:
-        - user
-      summary: Get user by user name
-      description: ""
-      operationId: getUserByName
-      parameters:
-        - name: username
-          in: path
-          description: "The name that needs to be fetched. Use user1 for testing. "
-          required: true
-          schema:
-            type: string
+      - Authentication
+      summary: Route Logout And Remove Cookie
+      description: Logout and remove cookie.
+      operationId: route_logout_and_remove_cookie_logout_get
       responses:
-        "200":
-          description: successful operation
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/docs/logout":
+    get:
+      tags:
+      - Authentication
+      summary: Route Logout And Remove Cookie
+      description: Logout and remove cookie.
+      operationId: route_logout_and_remove_cookie_docs_logout_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/docs/login":
+    get:
+      tags:
+      - Authentication
+      summary: Login Basic
+      description: Login and get token.
+      operationId: login_basic_docs_login_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      security:
+      - BasicAuth: []
+  "/docs":
+    get:
+      tags:
+      - Authentication
+      summary: Get Documentation
+      description: Get documentation.
+      operationId: get_documentation_docs_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/user/me":
+    get:
+      tags:
+      - Authentication
+      summary: Read Users Me
+      description: Get information of current user.
+      operationId: read_users_me_user_me_get
+      responses:
+        '200':
+          description: Successful Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid username supplied
-        "404":
-          description: User not found
-    put:
-      tags:
-        - user
-      summary: Updated user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        "400":
-          description: Invalid user supplied
-        "404":
-          description: User not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/User"
-        description: Updated user object
-        required: true
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        "400":
-          description: Invalid username supplied
-        "404":
-          description: User not found
-  /user/createWithArray:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array
-      description: ""
-      operationId: createUsersWithArrayInput
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        $ref: "#/components/requestBodies/UserArray"
-  /user/createWithList:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input list
-      description: ""
-      operationId: createUsersWithListInput
-      responses:
-        default:
-          description: successful operation
-      requestBody:
-        $ref: "#/components/requestBodies/UserArray"
-  /user/login:
+                "$ref": "#/components/schemas/UserSchema"
+      security:
+      - OAuth2PasswordBearerCookie: []
+  "/":
     get:
       tags:
-        - user
-      summary: Logs user into the system
-      description: ""
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password for login in clear text
-          required: true
-          schema:
-            type: string
+      - UI
+      summary: Read Root
+      operationId: read_root__get
       responses:
-        "200":
-          description: successful operation
-          headers:
-            X-Rate-Limit:
-              description: calls per hour allowed by the user
-              schema:
-                type: integer
-                format: int32
-            X-Expires-After:
-              description: date in UTC when token expires
+        '200':
+          description: Successful Response
+          content:
+            text/html:
               schema:
                 type: string
-                format: date-time
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: OK
-            application/xml:
-              schema:
-                type: string
-              examples:
-                response:
-                  value: <Message> OK </Message>
-            text/plain:
-              examples:
-                response:
-                  value: OK
-        "400":
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
-      tags:
-        - user
-      summary: Logs out current logged in user session
-      description: ""
-      operationId: logoutUser
-      responses:
-        default:
-          description: successful operation
 components:
   schemas:
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
-    Cat:
-      title: cat
-      description: A representation of a cat
-      allOf:
-        - $ref: "#/components/schemas/Pet"
-        - type: object
-          properties:
-            huntingSkill:
-              type: string
-              description: The measured skill for hunting
-              default: lazy
-              example: adventurous
-              enum:
-                - clueless
-                - lazy
-                - adventurous
-                - aggressive
-          required:
-            - huntingSkill
-    Category:
-      type: object
+    BillingCreateSchema:
       properties:
         id:
-          description: Category ID
-          allOf:
-            - $ref: "#/components/schemas/Id"
-        name:
-          description: Category name
-          type: string
-          minLength: 1
-        sub:
-          description: Test Sub Category
-          type: object
-          properties:
-            prop1:
-              type: string
-              description: Dumb Property
-      xml:
-        name: Category
-    Dog:
-      title: dog
-      description: A representation of a dog
-      allOf:
-        - $ref: "#/components/schemas/Pet"
-        - type: object
-          properties:
-            packSize:
-              type: integer
-              format: int32
-              description: The size of the pack the dog is from
-              default: 1
-              minimum: 1
-          required:
-            - packSize
-    HoneyBee:
-      title: bee
-      description: A representation of a honey bee
-      allOf:
-        - $ref: "#/components/schemas/Pet"
-        - type: object
-          properties:
-            honeyPerDay:
-              type: number
-              description: Average amount of honey produced per day in ounces
-              example: 3.14
-              multipleOf: .01
-          required:
-            - honeyPerDay
-    Id:
-      type: integer
-      format: int64
-      readOnly: true
-    Order:
-      type: object
-      properties:
-        id:
-          description: Order ID
-          allOf:
-            - $ref: "#/components/schemas/Id"
-        petId:
-          description: Pet ID
-          allOf:
-            - $ref: "#/components/schemas/Id"
-        quantity:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Id
+          omit_default: true
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+          default: true
+          omit_default: true
+        billing_type:
           type: integer
-          format: int32
-          minimum: 1
+          title: Billing Type
           default: 1
-        shipDate:
-          description: Estimated ship date
-          type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          enum:
-            - placed
-            - approved
-            - delivered
-        complete:
-          description: Indicates whenever order was completed or not
-          type: boolean
-          default: false
-          readOnly: true
-        requestId:
-          description: Unique Request Id
-          type: string
-          writeOnly: true
-      xml:
-        name: Order
-    Pet:
-      title: pet
+        expires_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Expires At
+          default: '2023-09-28T12:46:06.340457'
+          omit_default: true
       type: object
       required:
-        - name
-        - photoUrls
-      discriminator:
-        propertyName: petType
-        mapping:
-          cat: "#/components/schemas/Cat"
-          dog: "#/components/schemas/Dog"
-          bee: "#/components/schemas/HoneyBee"
+      - id
+      - user_id
+      - is_active
+      - billing_type
+      - expires_at
+      title: BillingCreateSchema
+      description: Billing Create.
+    BillingUpgradeSchema:
       properties:
-        id:
-          externalDocs:
-            description: "Find more info here"
-            url: "https://example.com"
-          description: Pet ID
-          allOf:
-            - $ref: "#/components/schemas/Id"
-        category:
-          description: Categories this pet belongs to
-          allOf:
-            - $ref: "#/components/schemas/Category"
-        name:
-          description: The name given to a pet
-          type: string
-          example: Guru
-        photoUrls:
-          description: The list of URL to a cute photos featuring pet
-          type: array
-          maxItems: 20
-          xml:
-            name: photoUrl
-            wrapped: true
-          items:
-            type: string
-            format: url
-        friend:
-          allOf:
-            - $ref: "#/components/schemas/Pet"
-        tags:
-          description: Tags attached to the pet
-          type: array
-          minItems: 1
-          xml:
-            name: tag
-            wrapped: true
-          items:
-            $ref: "#/components/schemas/Tag"
-        status:
-          type: string
-          description: Pet status in the store
-          enum:
-            - available
-            - pending
-            - sold
-        petType:
-          description: Type of a pet
-          type: string
-          oneOf:
-            - $ref: "#/components/schemas/Cat"
-            - $ref: "#/components/schemas/Dog"
-            - $ref: "#/components/schemas/HoneyBee"
-      xml:
-        name: Pet
-    Tag:
-      title: tag
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        billing_type:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Billing Type
+          default: 1
       type: object
+      title: BillingUpgradeSchema
+      description: Billing update schema.
+    Body_login_for_access_token_token_post:
       properties:
-        id:
-          description: Tag ID
-          allOf:
-            - $ref: "#/components/schemas/Id"
-        name:
-          description: Tag name
-          type: string
-          minLength: 1
-      xml:
-        name: Tag
-    User:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        pet:
-          oneOf:
-            - $ref: "#/components/schemas/Pet"
-            - $ref: "#/components/schemas/Tag"
+        grant_type:
+          anyOf:
+          - type: string
+            pattern: password
+          - type: 'null'
+          title: Grant Type
         username:
-          description: User supplied username
           type: string
-          minLength: 4
-          example: John78
-        firstName:
-          description: User first name
-          type: string
-          minLength: 1
-          example: John
-        lastName:
-          description: User last name
-          type: string
-          minLength: 1
-          example: Smith
-        email:
-          description: User email address
-          type: string
-          format: email
-          example: john.smith@example.com
+          title: Username
         password:
           type: string
-          description: >-
-            User password, MUST contain a mix of upper and lower case letters,
-            as well as digits
-          format: password
-          minLength: 8
-          pattern: "/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/"
-          example: drowssaP123
-        phone:
-          description: User phone number in international format
+          title: Password
+        scope:
           type: string
-          pattern: '/^\+(?:[0-9]-?){6,14}[0-9]$/'
-          example: +1-202-555-0192
-        userStatus:
-          description: User status
-          type: integer
-          format: int32
-      xml:
-        name: User
-  requestBodies:
-    Pet:
-      content:
-        application/json:
-          schema:
-            allOf:
-              - description: My Pet
-                title: Pettie
-              - $ref: "#/components/schemas/Pet"
-        application/xml:
-          schema:
-            type: "object"
-            properties:
-              name:
-                type: string
-                description: hooray
-      description: Pet object that needs to be added to the store
-      required: true
-    UserArray:
-      content:
-        application/json:
-          schema:
+          title: Scope
+          default: ''
+        client_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Id
+        client_secret:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Client Secret
+      type: object
+      required:
+      - username
+      - password
+      title: Body_login_for_access_token_token_post
+    Body_upload_bot_profile_picture_api_bot_upload_bot_profile_picture_post:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        file:
+          type: string
+          format: binary
+          title: File
+          description: A file read as UploadFile
+      type: object
+      required:
+      - bot_id
+      - file
+      title: Body_upload_bot_profile_picture_api_bot_upload_bot_profile_picture_post
+    Body_upload_file_api_scraping_file_post:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        file:
+          type: string
+          format: binary
+          title: File
+          description: A file read as UploadFile
+      type: object
+      required:
+      - bot_id
+      - file
+      title: Body_upload_file_api_scraping_file_post
+    BotCreateSchema:
+      properties:
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        bot_name:
+          type: string
+          title: Bot Name
+        case_study:
+          type: string
+          title: Case Study
+        collect_customer_info:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Collect Customer Info
+          omit_default: true
+        rules:
+          anyOf:
+          - items:
+              type: string
             type: array
-            items:
-              $ref: "#/components/schemas/User"
-      description: List of user object
-      required: true
+          - type: 'null'
+          title: Rules
+          omit_default: true
+        gpt_model_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gpt Model Name
+          omit_default: true
+        temperature:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Temperature
+          omit_default: true
+        custom_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Prompt
+          omit_default: true
+        bot_tone_type:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bot Tone Type
+          omit_default: true
+        custom_error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Error Message
+          omit_default: true
+      type: object
+      required:
+      - bot_name
+      - case_study
+      title: BotCreateSchema
+      description: Bot create.
+    BotKnowledgeBaseFileResponseSchema:
+      properties:
+        knowledge_base_id:
+          type: string
+          format: uuid
+          title: Knowledge Base Id
+        filename:
+          type: string
+          title: Filename
+        num_token:
+          type: integer
+          title: Num Token
+      type: object
+      required:
+      - knowledge_base_id
+      - filename
+      - num_token
+      title: BotKnowledgeBaseFileResponseSchema
+      description: Base knowledge get all files.
+    BotKnowledgeBaseResponseSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        full_page_url:
+          type: string
+          title: Full Page Url
+        training_status:
+          type: string
+          title: Training Status
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - id
+      - bot_id
+      - full_page_url
+      - training_status
+      - created_at
+      - updated_at
+      title: BotKnowledgeBaseResponseSchema
+      description: User Schema.
+    BotKnowledgeBaseUrlResponseSchema:
+      properties:
+        knowledge_base_id:
+          type: string
+          format: uuid
+          title: Knowledge Base Id
+        url:
+          type: string
+          title: Url
+        num_token:
+          type: integer
+          title: Num Token
+      type: object
+      required:
+      - knowledge_base_id
+      - url
+      - num_token
+      title: BotKnowledgeBaseUrlResponseSchema
+      description: Base knowledge get all urls.
+    BotQADocumentResponseSchema:
+      properties:
+        bot_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Bot Id
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+        answer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Answer
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+      type: object
+      required:
+      - bot_id
+      - question
+      - answer
+      - created_at
+      title: BotQADocumentResponseSchema
+      description: Bot question and answer document response schema.
+    BotQADocumentSchema:
+      properties:
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+        bot_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Bot Id
+        question:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Question
+        answer:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Answer
+      type: object
+      required:
+      - user_id
+      - bot_id
+      - question
+      - answer
+      title: BotQADocumentSchema
+      description: Bot question and answer document schema.
+    BotSchema:
+      properties:
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        bot_name:
+          type: string
+          title: Bot Name
+        case_study:
+          type: string
+          title: Case Study
+        collect_customer_info:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Collect Customer Info
+          omit_default: true
+        rules:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Rules
+          omit_default: true
+        gpt_model_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gpt Model Name
+          omit_default: true
+        temperature:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Temperature
+          omit_default: true
+        custom_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Prompt
+          omit_default: true
+        bot_tone_type:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bot Tone Type
+          omit_default: true
+        custom_error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Error Message
+          omit_default: true
+        id:
+          type: string
+          format: uuid
+          title: Id
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          omit_default: true
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          default: '2023-09-14T12:46:06.410986'
+      type: object
+      required:
+      - user_id
+      - bot_name
+      - case_study
+      - collect_customer_info
+      - rules
+      - gpt_model_name
+      - temperature
+      - custom_prompt
+      - bot_tone_type
+      - custom_error_message
+      - id
+      - created_at
+      - updated_at
+      title: BotSchema
+      description: Bot Schema.
+    BotTemplateConfigResponseSchema:
+      properties:
+        bot_template_config:
+          anyOf:
+          - items:
+              "$ref": "#/components/schemas/BotTemplateConfigSchema-Output"
+            type: array
+          - type: 'null'
+          title: Bot Template Config
+      type: object
+      required:
+      - bot_template_config
+      title: BotTemplateConfigResponseSchema
+      description: Bot template config response schema
+    BotTemplateConfigSchema-Input:
+      properties:
+        id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Id
+          omit_default: true
+        case_study:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Case Study
+          omit_default: true
+        prompt_template:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Prompt Template
+          omit_default: true
+        gpt_model_name:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Gpt Model Name
+          omit_default: true
+        visibility:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Visibility
+          omit_default: true
+      type: object
+      title: BotTemplateConfigSchema
+      description: Bot template config schema.
+    BotTemplateConfigSchema-Output:
+      properties:
+        id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Id
+          omit_default: true
+        case_study:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Case Study
+          omit_default: true
+        prompt_template:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Prompt Template
+          omit_default: true
+        gpt_model_name:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Gpt Model Name
+          omit_default: true
+        visibility:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Visibility
+          omit_default: true
+      type: object
+      required:
+      - id
+      - case_study
+      - prompt_template
+      - gpt_model_name
+      - visibility
+      title: BotTemplateConfigSchema
+      description: Bot template config schema.
+    BotUpdateSchema:
+      properties:
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        bot_name:
+          type: string
+          title: Bot Name
+        case_study:
+          type: string
+          title: Case Study
+        collect_customer_info:
+          anyOf:
+          - type: object
+          - type: 'null'
+          title: Collect Customer Info
+          omit_default: true
+        rules:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Rules
+          omit_default: true
+        gpt_model_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gpt Model Name
+          omit_default: true
+        temperature:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Temperature
+          omit_default: true
+        custom_prompt:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Prompt
+          omit_default: true
+        bot_tone_type:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bot Tone Type
+          omit_default: true
+        custom_error_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Custom Error Message
+          omit_default: true
+        id:
+          type: string
+          format: uuid
+          title: Id
+      type: object
+      required:
+      - bot_name
+      - case_study
+      - id
+      title: BotUpdateSchema
+      description: Bot update.
+    BotWidgetSettingSchema-Input:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+          omit_default: true
+        initial_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Initial Message
+          omit_default: true
+        suggest_messages:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Suggest Messages
+          omit_default: true
+        theme:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Theme
+          omit_default: true
+        bot_avatar_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bot Avatar Url
+          omit_default: true
+        chat_icon_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Icon Url
+          omit_default: true
+        chat_bubble_button_color:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Bubble Button Color
+          omit_default: true
+        chat_message_color:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Message Color
+          omit_default: true
+        align_chat_bubble_button:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Align Chat Bubble Button
+          omit_default: true
+        auto_show_initial_message_after:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Auto Show Initial Message After
+          omit_default: true
+      type: object
+      required:
+      - bot_id
+      title: BotWidgetSettingSchema
+      description: Bot widget setting schema.
+    BotWidgetSettingSchema-Output:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        display_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Display Name
+          omit_default: true
+        initial_message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Initial Message
+          omit_default: true
+        suggest_messages:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+          title: Suggest Messages
+          omit_default: true
+        theme:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Theme
+          omit_default: true
+        bot_avatar_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bot Avatar Url
+          omit_default: true
+        chat_icon_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Icon Url
+          omit_default: true
+        chat_bubble_button_color:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Bubble Button Color
+          omit_default: true
+        chat_message_color:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Chat Message Color
+          omit_default: true
+        align_chat_bubble_button:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Align Chat Bubble Button
+          omit_default: true
+        auto_show_initial_message_after:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Auto Show Initial Message After
+          omit_default: true
+      type: object
+      required:
+      - bot_id
+      - display_name
+      - initial_message
+      - suggest_messages
+      - theme
+      - bot_avatar_url
+      - chat_icon_url
+      - chat_bubble_button_color
+      - chat_message_color
+      - align_chat_bubble_button
+      - auto_show_initial_message_after
+      title: BotWidgetSettingSchema
+      description: Bot widget setting schema.
+    ChatHistoryCreateSchema:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        message:
+          type: string
+          title: Message
+        session_id:
+          type: string
+          format: uuid
+          title: Session Id
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        sender:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: Sender
+          omit_default: true
+      type: object
+      required:
+      - bot_id
+      - message
+      - session_id
+      title: ChatHistoryCreateSchema
+      description: Message Schema.
+    ChatHistoryResponseSchema:
+      properties:
+        bot_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bot Name
+          omit_default: true
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        session_id:
+          type: string
+          format: uuid
+          title: Session Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        chat_history_response:
+          items:
+            "$ref": "#/components/schemas/ChatHistorySchema"
+          type: array
+          title: Chat History Response
+      type: object
+      required:
+      - bot_id
+      - user_id
+      - session_id
+      - created_at
+      - chat_history_response
+      title: ChatHistoryResponseSchema
+      description: Conversation history response schema.
+    ChatHistorySchema:
+      properties:
+        sender_type:
+          type: string
+          title: Sender Type
+        content:
+          type: string
+          title: Content
+      type: object
+      required:
+      - sender_type
+      - content
+      title: ChatHistorySchema
+      description: Chat history response schema.
+    ConversationHistoryInputSchema:
+      properties:
+        date_from:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date From
+          omit_default: true
+        date_to:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Date To
+          omit_default: true
+        conversation_history_response:
+          items:
+            "$ref": "#/components/schemas/ChatHistoryResponseSchema"
+          type: array
+          title: Conversation History Response
+      type: object
+      required:
+      - conversation_history_response
+      title: ConversationHistoryInputSchema
+    HTTPValidationError:
+      properties:
+        errors:
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+          type: array
+          title: Errors
+      type: object
+      title: HTTPValidationError
+    KnowledgeBaseCreateSchema:
+      properties:
+        bot_id:
+          type: string
+          format: uuid
+          title: Bot Id
+        user_id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+          title: User Id
+          omit_default: true
+        scrape_url:
+          type: string
+          title: Scrape Url
+        scrape_type:
+          anyOf:
+          - "$ref": "#/components/schemas/ScrapeTypeEnum"
+          - type: 'null'
+          default: 2
+          omit_default: true
+      type: object
+      required:
+      - bot_id
+      - scrape_url
+      title: KnowledgeBaseCreateSchema
+    ScrapeTypeEnum:
+      type: integer
+      enum:
+      - 1
+      - 2
+      title: ScrapeTypeEnum
+    TokenSchema:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+      type: object
+      required:
+      - access_token
+      - token_type
+      title: TokenSchema
+      description: Token Model.
+    UserCreateSchema:
+      properties:
+        email:
+          type: string
+          title: Email
+        password:
+          type: string
+          title: Password
+        full_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Full Name
+          omit_default: true
+        role:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Role
+          omit_default: true
+      type: object
+      required:
+      - email
+      - password
+      title: UserCreateSchema
+      description: User create.
+    UserSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        email:
+          type: string
+          title: Email
+        is_active:
+          type: boolean
+          title: Is Active
+        created_at:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Created At
+          omit_default: true
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          default: '2023-09-14T12:46:06.197028'
+      type: object
+      required:
+      - id
+      - email
+      - is_active
+      - created_at
+      - updated_at
+      title: UserSchema
+      description: User Schema.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
-    petstore_auth:
-      description: |
-        Get access to data while protecting your account credentials.
-        OAuth2 is also a safer and more secure way to give you access.
+    OAuth2PasswordBearerCookie:
       type: oauth2
       flows:
-        implicit:
-          authorizationUrl: "http://petstore.swagger.io/api/oauth/dialog"
-          scopes:
-            "write:pets": modify pets in your account
-            "read:pets": read your pets
-    api_key:
-      description: >
-        For this sample, you can use the api key `special-key` to test the
-        authorization filters.
-      type: apiKey
-      name: api_key
-      in: header
-  examples:
-    Order:
-      value:
-        quantity: 1
-        shipDate: "2018-10-19T16:46:45Z"
-        status: placed
-        complete: false
-x-webhooks:
-  newPet:
-    post:
-      summary: New pet
-      description: Information about a new pet in the systems
-      operationId: newPet
-      tags:
-        - pet
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Pet"
-      responses:
-        "200":
-          description: Return a 200 status to indicate that the data was received successfully
+        password:
+          scopes: {}
+          tokenUrl: "/token"
+    BasicAuth:
+      type: http
+      scheme: bearer
